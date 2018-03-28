@@ -537,7 +537,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <li>a zero character <em>element</em> (i.e. <code>&quot;&quot;</code>) in a <code>target</code> <code>names</code>/<code>row.names</code> character vector will allow any value to match at the corresponding position of the <code>current</code> <code>names</code>/<code>row.names</code> vector</li>
 </ul>
 <div class="sourceCode" id="cb68"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb68-1" data-line-number="1"><span class="kw">alike</span>(<span class="kw">setNames</span>(<span class="kw">integer</span>(), <span class="kw">character</span>()), <span class="dv">1</span><span class="op">:</span><span class="dv">3</span>)</a></code></pre></div>
-<pre><code>[1] &quot;`names(1:3)` should be type \&quot;character\&quot; (is \&quot;NULL\&quot;)&quot;</code></pre>
+<pre><code>[1] &quot;`1:3` should have attribute \&quot;names\&quot;&quot;</code></pre>
 <div class="sourceCode" id="cb70"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb70-1" data-line-number="1"><span class="kw">alike</span>(<span class="kw">setNames</span>(<span class="kw">integer</span>(), <span class="kw">character</span>()), <span class="kw">c</span>(<span class="dt">a=</span><span class="dv">1</span>, <span class="dt">b=</span><span class="dv">2</span>, <span class="dt">c=</span><span class="dv">3</span>))</a></code></pre></div>
 <pre><code>[1] TRUE</code></pre>
 <div class="sourceCode" id="cb72"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb72-1" data-line-number="1"><span class="kw">alike</span>(<span class="kw">setNames</span>(<span class="kw">integer</span>(<span class="dv">3</span>), <span class="kw">c</span>(<span class="st">&quot;&quot;</span>, <span class="st">&quot;&quot;</span>, <span class="st">&quot;Z&quot;</span>)), <span class="kw">c</span>(<span class="dt">a=</span><span class="dv">1</span>, <span class="dt">b=</span><span class="dv">2</span>, <span class="dt">c=</span><span class="dv">3</span>))</a></code></pre></div>
@@ -566,7 +566,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <a class="sourceLine" id="cb82-5" data-line-number="5"><span class="kw">alike</span>(mx.tpl, mx.cur)</a></code></pre></div>
 <pre><code>[1] TRUE</code></pre>
 <div class="sourceCode" id="cb84"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb84-1" data-line-number="1"><span class="kw">alike</span>(mx.tpl, mx.cur2)</a></code></pre></div>
-<pre><code>[1] &quot;`names(dimnames(mx.cur2))` should be type \&quot;character\&quot; (is \&quot;NULL\&quot;)&quot;</code></pre>
+<pre><code>[1] &quot;`dimnames(mx.cur2)` should have attribute \&quot;names\&quot;&quot;</code></pre>
 <p>Note that <code>dimnames</code> can have a <code>names</code> attribute. This <code>names</code> attributed is treated as described in <a href="#row.names-and-names">row.names and names</a>.</p>
 <div class="sourceCode" id="cb86"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb86-1" data-line-number="1"><span class="kw">names</span>(<span class="kw">dimnames</span>(mx.tpl))</a></code></pre></div>
 <pre><code>[1] &quot;row.id&quot; &quot;&quot;      </code></pre>
@@ -662,17 +662,17 @@ character(0)</code></pre>
 <a class="sourceLine" id="cb101-7" data-line-number="7">  <span class="kw">type_and_len</span>(rivers, rivers)</a>
 <a class="sourceLine" id="cb101-8" data-line-number="8">)</a></code></pre></div>
 <pre><code>Mean eval time from 10000 iterations, in microseconds:
-  identical(rivers, rivers)     ~  0.6
-  alike(rivers, rivers)         ~  3.3
-  type_and_len(rivers, rivers)  ~  1.7</code></pre>
+  identical(rivers, rivers)     ~  0.8
+  alike(rivers, rivers)         ~  3.7
+  type_and_len(rivers, rivers)  ~  1.6</code></pre>
 <p>While <code>alike</code> is slower than <code>identical</code> and the comparable bare bones R function, it is competitive with a bare bones R function that checks types and length. As objects grow more complex, <code>identical</code> will obviously pull ahead, though <code>alike</code> should be sufficiently fast for most applications:</p>
 <div class="sourceCode" id="cb103"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb103-1" data-line-number="1"><span class="kw">bench_mark</span>(<span class="dt">times=</span><span class="fl">1e4</span>,</a>
 <a class="sourceLine" id="cb103-2" data-line-number="2">  <span class="kw">identical</span>(mtcars, mtcars),</a>
 <a class="sourceLine" id="cb103-3" data-line-number="3">  <span class="kw">alike</span>(mtcars, mtcars)</a>
 <a class="sourceLine" id="cb103-4" data-line-number="4">)</a></code></pre></div>
 <pre><code>Mean eval time from 10000 iterations, in microseconds:
-  identical(mtcars, mtcars)  ~   0.7
-  alike(mtcars, mtcars)      ~  12.2</code></pre>
+  identical(mtcars, mtcars)  ~   0.6
+  alike(mtcars, mtcars)      ~  15.4</code></pre>
 <p>In the above example, we are comparing the data frames, their attributes, and the 11 columns individually.</p>
 <p>Keep in mind that the complexity of the <code>alike</code> comparison is driven by the complexity of the template, not the object we are checking, so we can always manage the expense of the <code>alike</code> evaluation.</p>
 <p>Comparisons that succeed will be substantially faster than comparisons that fail as the construction of error messages is non-trivial and we have prioritized optimization in the success case.</p>
@@ -687,8 +687,8 @@ character(0)</code></pre>
 <a class="sourceLine" id="cb105-6" data-line-number="6">  <span class="kw">identical</span>(mdl.tpl, mdl.tpl)</a>
 <a class="sourceLine" id="cb105-7" data-line-number="7">)</a></code></pre></div>
 <pre><code>Mean eval time from 1000 iterations, in microseconds:
-  alike(mdl.tpl, mdl.tpl)      ~   214
-  all.equal(mdl.tpl, mdl.tpl)  ~  1850
+  alike(mdl.tpl, mdl.tpl)      ~   284
+  all.equal(mdl.tpl, mdl.tpl)  ~  1828
   identical(mdl.tpl, mdl.tpl)  ~     1</code></pre>
 <p>Even with template as large as <code>lm</code> results (check <code>str(mdl.tpl)</code>) we can evaluate <code>alike</code> thousands of times before the overhead becomes noticeable.</p>
 </div>
@@ -703,8 +703,8 @@ character(0)</code></pre>
 <a class="sourceLine" id="cb107-6" data-line-number="6">  <span class="kw">alike</span>(<span class="kw">data.frame</span>(<span class="kw">integer</span>(), <span class="kw">numeric</span>()), df.cur)</a>
 <a class="sourceLine" id="cb107-7" data-line-number="7">)</a></code></pre></div>
 <pre><code>Mean eval time from 1000 iterations, in microseconds:
-  alike(df.tpl, df.cur)                     ~    8
-  alike(data.frame(integer(), numeric())..  ~  386</code></pre>
+  alike(df.tpl, df.cur)                     ~   10
+  alike(data.frame(integer(), numeric())..  ~  402</code></pre>
 <p><code>data.frame</code> is a particularly slow constructor, but in general you are best served by defining your templates (including calls to <code>abstract</code>) outside of your function so they are created on package load rather than every time your function is called.</p>
 </div>
 </div>
