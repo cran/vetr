@@ -1,6 +1,6 @@
-20da52e296c46ee56331198765886b51 *DESCRIPTION
+3cf43c1f2658580e27d49735cc468434 *DESCRIPTION
 c2a765dea9d480c7b4a1411cd3cbfdc5 *NAMESPACE
-bb6dac11657de632d48ab941bce0f074 *NEWS.md
+599db06f64afa05bc89e6ebb20789b6c *NEWS.md
 580ef1244caabcda8a6423b4200d1614 *R/abstract.R
 8e9251b55f55e0baa4a27ef65b94661d *R/alike.R
 69fdb68390f9ead5ff2b26f0b63a279d *R/all-bw.R
@@ -16,13 +16,13 @@ a81d2dffeeb86c72696a0cf504644e4d *R/type.R
 dfdaa0bd4271dffcda1a78501919e940 *R/validators.R
 dc9b146122713f79384eb2ff9b695809 *R/vetr-package.R
 c0fa40b8b010d49a60519bec26e70905 *README.md
-3a053193e794de588a5660c44d9ad27e *build/vignette.rds
+420122e6878507e9b9598f3539378f97 *build/vignette.rds
 50fbbb63514779064245ca1fb0c835aa *inst/doc/alike.R
 5da620bbe061af3699bc33886acf5c63 *inst/doc/alike.Rmd
-fd142b7377fa67260d8a5f05b16d1fba *inst/doc/alike.html
+7c257d8012be6e1d8febdb46ac95deb3 *inst/doc/alike.html
 97d77baecd282cdbc7902228d3bfc218 *inst/doc/vetr.R
 ca4e5201e2c972037997ef62d25688a1 *inst/doc/vetr.Rmd
-4d781c98a0193dd1b1b7380effc9211f *inst/doc/vetr.html
+c43cce4a4b3799b6bf8656a6d35340f6 *inst/doc/vetr.html
 24180de5ce7454ed6a030e4eddfce0ac *man/abstract.Rd
 af8d6d185961528c35ae34919efecf6e *man/abstract.ggplot.Rd
 3b9884ae5abf6aa40b4adaac123e99ba *man/alike.Rd
@@ -36,9 +36,9 @@ cec66427877e5dc8e64fc9d9e94ad614 *man/vet.Rd
 f46de41c55902e8c825fc93c2699250d *man/vetr-package.Rd
 f60406c9b07e2eaf8c02c09c21ceae2d *man/vetr.Rd
 37609a20260543708a122098b0638205 *man/vetr_settings.Rd
-4dfc7d66c0dbfa23ddd4c1650dae3cbf *src/alike.c
+679fd4f45f6388509df73b14687d04ef *src/alike.c
 50d77d0676d2cf0bdea60360eeba3c08 *src/alike.h
-d48f8fcc5ed2bb9a03ded6973d875536 *src/all-bw.c
+5094eacb664552c1d7688c976d4b22ba *src/all-bw.c
 d3f2e551c931cd8a03bc091ff69c6355 *src/all-bw.h
 e921f74105ec5c30129aa5a14dc5d1f0 *src/assumptions.c
 c665fdbc0a247f206b62c079d5fd13bc *src/attr.c
@@ -67,7 +67,7 @@ b6eb5870939e3919eb365e096e0e4236 *src/settings.h
 cdd96a1fb8b1149add2f828419e9a32d *src/validate.c
 68f3f05a507e7eb9b98bfebeafd8793f *src/validate.h
 36607fb768a549213b9185d6265159ac *src/valname.c
-c7837f0f9d7a4bf0d3e851cef84a8a68 *tests/run.R
+59a77a0a650ba9861a9626aea1325a2c *tests/run.R
 fa70c32d4d18336d1243d857e09a1607 *tests/unitizer/_pre/lorem.R
 8c87b2b2359b51df07bd22452134a581 *tests/unitizer/_pre/lorem.objs/lorem.RDS
 02ae5877487fa39220a36002e4b27981 *tests/unitizer/_pre/lorem.objs/lorem.cn.RDS
