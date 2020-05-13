@@ -1,6 +1,6 @@
-7697a95470349a6a1a6d62b83a8223dc *DESCRIPTION
+ec29dd3e99605af7400028940d2387e0 *DESCRIPTION
 c2a765dea9d480c7b4a1411cd3cbfdc5 *NAMESPACE
-c3a3a5a821612e5b4b6ca2b036fc5671 *NEWS.md
+5a041c42bc99ba4fc2551d54162c9914 *NEWS.md
 a5be54e1b45c6a71d2d28fa4c02eb356 *R/abstract.R
 288caa20ecaba7312ac9129f921858be *R/alike.R
 69fdb68390f9ead5ff2b26f0b63a279d *R/all-bw.R
@@ -16,13 +16,13 @@ dace1033eb1d952c97f6aabb9d8e295f *R/validate.R
 223a6052bc573a03415f9b5d7630b8b4 *R/validators.R
 745de836c0ca7459773ed468a723b571 *R/vetr-package.R
 912a9ba4e78b5396540a529cc0b9fa4a *README.md
-d4b25f5ac3ba90e7499851c3da70ca19 *build/vignette.rds
-50fbbb63514779064245ca1fb0c835aa *inst/doc/alike.R
+7d0c7156159284537278db8e9bd8bb40 *build/vignette.rds
+d3824f145b9aaa6e0c68d6a42373bfda *inst/doc/alike.R
 5da620bbe061af3699bc33886acf5c63 *inst/doc/alike.Rmd
-25582ba6c04f851dfbedfba76ea83e7c *inst/doc/alike.html
-97d77baecd282cdbc7902228d3bfc218 *inst/doc/vetr.R
+2ecd708b7938d00c6980f544c48a3e21 *inst/doc/alike.html
+5304c9d6175563a6d83f2232c9054b32 *inst/doc/vetr.R
 ca4e5201e2c972037997ef62d25688a1 *inst/doc/vetr.Rmd
-a39fd074d8dcbc7c925d216625fd627b *inst/doc/vetr.html
+0cda8597d4de09f8d9b607d72e89de11 *inst/doc/vetr.html
 24180de5ce7454ed6a030e4eddfce0ac *man/abstract.Rd
 af8d6d185961528c35ae34919efecf6e *man/abstract.ggplot.Rd
 3b9884ae5abf6aa40b4adaac123e99ba *man/alike.Rd
@@ -68,7 +68,7 @@ f5101e6bc722f036eb247e51c8a6f58d *src/trackinghash.h
 20156f3d51df06f19d58f317265cdaa5 *src/validate.h
 83db77822f7953445bdcd7110d1dd5a2 *src/valname.c
 d41d8cd98f00b204e9800998ecf8427e *tests/core
-b83cd98c47780aaaf56df72b28db48e0 *tests/run.R
+b5e8486dcd5ff64e9d762b3333eb8ed0 *tests/run.R
 fa70c32d4d18336d1243d857e09a1607 *tests/unitizer/_pre/lorem.R
 8c87b2b2359b51df07bd22452134a581 *tests/unitizer/_pre/lorem.objs/lorem.RDS
 02ae5877487fa39220a36002e4b27981 *tests/unitizer/_pre/lorem.objs/lorem.cn.RDS
@@ -76,8 +76,8 @@ fa70c32d4d18336d1243d857e09a1607 *tests/unitizer/_pre/lorem.R
 02f57b1caccd7e1e27af1a346771c1e5 *tests/unitizer/_pre/lorem.objs/lorem.tr.RDS
 c37b505c67a750d4a8e5aec729f49962 *tests/unitizer/abstract.R
 61aa1ca40398a61f2473b2e7fdd1595f *tests/unitizer/abstract.unitizer/data.rds
-7308005119c062f728b3b8026674cb78 *tests/unitizer/alike.R
-ece9a1b69dff8cbe8463ecf1c451311d *tests/unitizer/alike.unitizer/data.rds
+ad3c8eec489f12a4f6db93b3e5ba469a *tests/unitizer/alike.R
+d2a07d7a5f7a1e98790295cac4562abd *tests/unitizer/alike.unitizer/data.rds
 29d50d94cbb83c31bc9fffcefb684ca6 *tests/unitizer/all-bw.R
 7de109d74b842a05ecfa78f7cab48693 *tests/unitizer/all-bw.unitizer/data.rds
 c508ae7f5f9f0264ea0ff861d9494044 *tests/unitizer/classes.R
@@ -105,7 +105,7 @@ c93991357a7ac9e0616919533e2c17af *tests/unitizer/validate.R
 915d469d4a0a848cac1297c49054c9b6 *tests/unitizer/validate.args.R
 109c5b4d63640f2a8750090254f5a98d *tests/unitizer/validate.args.unitizer/data.rds
 9db6d3628edcd3185be4b55463abdb0b *tests/unitizer/validate.unitizer/data.rds
-3e8e5901838c52b3bf68a68e8f38c4a9 *tests/valgrind/run.R
+ca24c43299306bd818b72b138229030c *tests/valgrind/run.R
 5da620bbe061af3699bc33886acf5c63 *vignettes/alike.Rmd
 72609f0be5bb8f95224a6e17362ffb1f *vignettes/rmdhunks/declarative-checks.Rmd
 b22ce518655c8618d8618ec5d59ce597 *vignettes/rmdhunks/microbenchmark.Rmd
