@@ -33,8 +33,6 @@
 \alias{LGL.1}
 \title{Vetting Tokens With Custom Error Messages}
 \format{
-vetting tokens are objects of class "call".
-
 An object of class \code{call} of length 2.
 
 An object of class \code{call} of length 2.
