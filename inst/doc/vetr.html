@@ -121,13 +121,20 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   for (var i = 0; i < sheets.length; i++) {
     if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
     try { var rules = sheets[i].cssRules; } catch (e) { continue; }
-    for (var j = 0; j < rules.length; j++) {
+    var j = 0;
+    while (j < rules.length) {
       var rule = rules[j];
       // check if there is a div.sourceCode rule
-      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
       var style = rule.style.cssText;
       // check if color or background-color is set
-      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
       // replace div.sourceCode by a pre.sourceCode rule
       sheets[i].deleteRule(j);
       sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
@@ -373,10 +380,12 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <li><a href="#easily">Easily</a></li>
 <li><a href="#quickly">Quickly</a></li>
 </ul></li>
-<li><a href="#declarative-checks-with-templates">Declarative Checks with Templates</a>
+<li><a href="#declarative-checks-with-templates">Declarative Checks with
+Templates</a>
 <ul>
 <li><a href="#templates">Templates</a></li>
-<li><a href="#auto-generated-error-messages">Auto-Generated Error Messages</a></li>
+<li><a href="#auto-generated-error-messages">Auto-Generated Error
+Messages</a></li>
 </ul></li>
 <li><a href="#vetting-expressions">Vetting Expressions</a>
 <ul>
@@ -388,7 +397,8 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <li><a href="#performance-considerations">Performance Considerations</a>
 <ul>
 <li><a href="#benchmarks">Benchmarks</a></li>
-<li><a href="#templates-and-performance">Templates and Performance</a></li>
+<li><a href="#templates-and-performance">Templates and
+Performance</a></li>
 </ul></li>
 <li><a href="#alternatives">Alternatives</a></li>
 </ul>
@@ -398,19 +408,26 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <h2>Trust, but Verify</h2>
 <div id="easily" class="section level3">
 <h3>Easily</h3>
-<p>When you write functions that operate on S3 or unclassed objects you can either trust that your inputs will be structured as expected, or tediously check that they are.</p>
-<p><code>vetr</code> takes the tedium out of structure verification so that you can trust, but verify. It lets you express structural requirements declaratively with templates, and it auto-generates human-friendly error messages as needed.</p>
+<p>When you write functions that operate on S3 or unclassed objects you
+can either trust that your inputs will be structured as expected, or
+tediously check that they are.</p>
+<p><code>vetr</code> takes the tedium out of structure verification so
+that you can trust, but verify. It lets you express structural
+requirements declaratively with templates, and it auto-generates
+human-friendly error messages as needed.</p>
 </div>
 <div id="quickly" class="section level3">
 <h3>Quickly</h3>
-<p><code>vetr</code> is written in C to minimize overhead from parameter checks in your functions. It has no dependencies.</p>
+<p><code>vetr</code> is written in C to minimize overhead from parameter
+checks in your functions. It has no dependencies.</p>
 </div>
 </div>
 <div id="declarative-checks-with-templates" class="section level2">
 <h2>Declarative Checks with Templates</h2>
 <div id="templates" class="section level3">
 <h3>Templates</h3>
-<p>Declare a template that an object should conform to, and let <code>vetr</code> take care of the rest:</p>
+<p>Declare a template that an object should conform to, and let
+<code>vetr</code> take care of the rest:</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(vetr)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>tpl <span class="ot">&lt;-</span> <span class="fu">numeric</span>(1L)</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">vet</span>(tpl, <span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>)</span></code></pre></div>
@@ -419,19 +436,23 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <pre><code>[1] &quot;`\&quot;hello\&quot;` should be type \&quot;numeric\&quot; (is \&quot;character\&quot;)&quot;</code></pre>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">vet</span>(tpl, <span class="dv">42</span>)</span></code></pre></div>
 <pre><code>[1] TRUE</code></pre>
-<p>The template concept is based on <code>vapply</code>, but generalizes to all S3 objects and adds some special features to facilitate comparison. For example, zero length templates match any length:</p>
+<p>The template concept is based on <code>vapply</code>, but generalizes
+to all S3 objects and adds some special features to facilitate
+comparison. For example, zero length templates match any length:</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>tpl <span class="ot">&lt;-</span> <span class="fu">integer</span>()</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">vet</span>(tpl, 1L<span class="sc">:</span>3L)</span></code></pre></div>
 <pre><code>[1] TRUE</code></pre>
 <div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">vet</span>(tpl, 1L)</span></code></pre></div>
 <pre><code>[1] TRUE</code></pre>
-<p>And for convenience short (&lt;= 100 length) integer-like numerics are considered integer:</p>
+<p>And for convenience short (&lt;= 100 length) integer-like numerics
+are considered integer:</p>
 <div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>tpl <span class="ot">&lt;-</span> <span class="fu">integer</span>(1L)</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">vet</span>(tpl, <span class="dv">1</span>)       <span class="co"># this is a numeric, not an integer</span></span></code></pre></div>
 <pre><code>[1] TRUE</code></pre>
 <div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">vet</span>(tpl, <span class="fl">1.0001</span>)</span></code></pre></div>
 <pre><code>[1] &quot;`1.0001` should be type \&quot;integer-like\&quot; (is \&quot;double\&quot;)&quot;</code></pre>
-<p><code>vetr</code> can compare recursive objects such as lists, or data.frames:</p>
+<p><code>vetr</code> can compare recursive objects such as lists, or
+data.frames:</p>
 <div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>tpl.iris <span class="ot">&lt;-</span> iris[<span class="dv">0</span>, ]      <span class="co"># 0 row DF matches any number of rows in object</span></span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>iris.fake <span class="ot">&lt;-</span> iris</span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="fu">levels</span>(iris.fake<span class="sc">$</span>Species)[<span class="dv">3</span>] <span class="ot">&lt;-</span> <span class="st">&quot;sibirica&quot;</span>   <span class="co"># tweak levels</span></span>
@@ -440,7 +461,9 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <pre><code>[1] TRUE</code></pre>
 <div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">vet</span>(tpl.iris, iris.fake)</span></code></pre></div>
 <pre><code>[1] &quot;`levels(iris.fake$Species)[3]` should be \&quot;virginica\&quot; (is \&quot;sibirica\&quot;)&quot;</code></pre>
-<p>From our declared template <code>iris[0, ]</code>, <code>vetr</code> infers all the required checks. In this case, <code>vet(iris[0, ], iris.fake, stop=TRUE)</code> is equivalent to:</p>
+<p>From our declared template <code>iris[0, ]</code>, <code>vetr</code>
+infers all the required checks. In this case,
+<code>vet(iris[0, ], iris.fake, stop=TRUE)</code> is equivalent to:</p>
 <div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>stopifnot_iris <span class="ot">&lt;-</span> <span class="cf">function</span>(x) {</span>
 <span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stopifnot</span>(</span>
 <span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">is.data.frame</span>(x),</span>
@@ -455,8 +478,13 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>}</span>
 <span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a><span class="fu">stopifnot_iris</span>(iris.fake)</span></code></pre></div>
 <pre><code>Error in stopifnot_iris(iris.fake): identical(levels(x$Species), levels(iris$Species)) is not TRUE</code></pre>
-<p><code>vetr</code> saved us typing, and the time and thought needed to come up with what needs to be compared.</p>
-<p>You could just as easily have created templates for nested lists, or data frames in lists. Templates are compared to objects with the <code>alike</code> function. For a thorough description of templates and how they work see the <a href="./alike.html"><code>alike</code> vignette</a>. For template examples see <code>example(alike)</code>.</p>
+<p><code>vetr</code> saved us typing, and the time and thought needed to
+come up with what needs to be compared.</p>
+<p>You could just as easily have created templates for nested lists, or
+data frames in lists. Templates are compared to objects with the
+<code>alike</code> function. For a thorough description of templates and
+how they work see the <a href="./alike.html"><code>alike</code>
+vignette</a>. For template examples see <code>example(alike)</code>.</p>
 </div>
 <div id="auto-generated-error-messages" class="section level3">
 <h3>Auto-Generated Error Messages</h3>
@@ -467,29 +495,39 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <ul>
 <li>The reason for the failure</li>
 <li>What structure would be acceptable instead</li>
-<li>The location of failure <code>levels(iris.fake$Species)[3]</code></li>
+<li>The location of failure
+<code>levels(iris.fake$Species)[3]</code></li>
 </ul>
-<p><code>vetr</code> does what it can to reduce the time from error to resolution. The location of failure is generated such that you can easily copy it in part or full to the R prompt for further examination.</p>
+<p><code>vetr</code> does what it can to reduce the time from error to
+resolution. The location of failure is generated such that you can
+easily copy it in part or full to the R prompt for further
+examination.</p>
 </div>
 </div>
 <div id="vetting-expressions" class="section level2">
 <h2>Vetting Expressions</h2>
 <div id="introduction" class="section level3">
 <h3>Introduction</h3>
-<p>You can combine templates with <code>&amp;&amp;</code> / <code>||</code>:</p>
+<p>You can combine templates with <code>&amp;&amp;</code> /
+<code>||</code>:</p>
 <div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">vet</span>(<span class="fu">numeric</span>(1L) <span class="sc">||</span> <span class="cn">NULL</span>, <span class="cn">NULL</span>)</span></code></pre></div>
 <pre><code>[1] TRUE</code></pre>
 <div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">vet</span>(<span class="fu">numeric</span>(1L) <span class="sc">||</span> <span class="cn">NULL</span>, <span class="dv">42</span>)</span></code></pre></div>
 <pre><code>[1] TRUE</code></pre>
 <div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">vet</span>(<span class="fu">numeric</span>(1L) <span class="sc">||</span> <span class="cn">NULL</span>, <span class="st">&quot;foo&quot;</span>)</span></code></pre></div>
 <pre><code>[1] &quot;`\&quot;foo\&quot;` should be `NULL`, or type \&quot;numeric\&quot; (is \&quot;character\&quot;)&quot;</code></pre>
-<p>Templates only check structure. When you need to check values use <code>.</code> to refer to the object:</p>
+<p>Templates only check structure. When you need to check values use
+<code>.</code> to refer to the object:</p>
 <div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">vet</span>(<span class="fu">numeric</span>(1L) <span class="sc">&amp;&amp;</span> . <span class="sc">&gt;</span> <span class="dv">0</span>, <span class="sc">-</span><span class="dv">42</span>)  <span class="co"># strictly positive scalar numeric</span></span></code></pre></div>
 <pre><code>[1] &quot;`-42 &gt; 0` is not TRUE (FALSE)&quot;</code></pre>
 <div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">vet</span>(<span class="fu">numeric</span>(1L) <span class="sc">&amp;&amp;</span> . <span class="sc">&gt;</span> <span class="dv">0</span>, <span class="dv">42</span>)</span></code></pre></div>
 <pre><code>[1] TRUE</code></pre>
-<p>If you do use the <code>.</code> symbol in your vetting expressions in your packages, you will need to include <code>utils::globalVariables(&quot;.&quot;)</code> as a top-level call to avoid the “no visible binding for global variable ‘.’” R CMD check NOTE.</p>
-<p>You can compose vetting expressions as language objects and combine them:</p>
+<p>If you do use the <code>.</code> symbol in your vetting expressions
+in your packages, you will need to include
+<code>utils::globalVariables(&quot;.&quot;)</code> as a top-level call to avoid
+the “no visible binding for global variable ‘.’” R CMD check NOTE.</p>
+<p>You can compose vetting expressions as language objects and combine
+them:</p>
 <div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>scalar.num.pos <span class="ot">&lt;-</span> <span class="fu">quote</span>(<span class="fu">numeric</span>(1L) <span class="sc">&amp;&amp;</span> . <span class="sc">&gt;</span> <span class="dv">0</span>)</span>
 <span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>foo.or.bar <span class="ot">&lt;-</span> <span class="fu">quote</span>(<span class="fu">character</span>(1L) <span class="sc">&amp;&amp;</span> . <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&#39;foo&#39;</span>, <span class="st">&#39;bar&#39;</span>))</span>
 <span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>vet.exp <span class="ot">&lt;-</span> <span class="fu">quote</span>(scalar.num.pos <span class="sc">||</span> foo.or.bar)</span>
@@ -502,21 +540,32 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <pre><code>[1] &quot;At least one of these should pass:&quot;                         
 [2] &quot;  - `\&quot;baz\&quot; %in% c(\&quot;foo\&quot;, \&quot;bar\&quot;)` is not TRUE (FALSE)&quot; 
 [3] &quot;  - `\&quot;baz\&quot;` should be type \&quot;numeric\&quot; (is \&quot;character\&quot;)&quot;</code></pre>
-<p><code>all_bw</code> is available for value range checks (~10x faster than <code>isTRUE(all(. &gt;= x &amp; . &lt;= y))</code> for large vectors):</p>
+<p><code>all_bw</code> is available for value range checks (~10x faster
+than <code>isTRUE(all(. &gt;= x &amp; . &lt;= y))</code> for large
+vectors):</p>
 <div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="fu">vet</span>(<span class="fu">all_bw</span>(., <span class="dv">0</span>, <span class="dv">1</span>), <span class="fu">runif</span>(<span class="dv">5</span>) <span class="sc">+</span> <span class="dv">1</span>)</span></code></pre></div>
-<pre><code>[1] &quot;`all_bw(runif(5) + 1, 0, 1)` is not TRUE (is chr: \&quot;`1.280344` at index 1 not in `[0,1]`\&quot;)&quot;</code></pre>
-<p>There are a number of predefined vetting tokens you can use in your vetting expressions such as:</p>
+<pre><code>[1] &quot;`all_bw(runif(5) + 1, 0, 1)` is not TRUE (is chr: \&quot;`1.055965` at index 1 not in `[0,1]`\&quot;)&quot;</code></pre>
+<p>There are a number of predefined vetting tokens you can use in your
+vetting expressions such as:</p>
 <div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="fu">vet</span>(NUM.POS, <span class="sc">-</span><span class="fu">runif</span>(<span class="dv">5</span>))    <span class="co"># positive numeric; see `?vet_token` for others</span></span></code></pre></div>
 <pre><code>[1] &quot;`-runif(5)` should contain only positive values, but has negatives&quot;</code></pre>
-<p>Vetting expressions are designed to be intuitive to use, but their implementation is complex. We recommend you look at <code>example(vet)</code> for usage ideas, or at the <a href="#non-standard-evaluation">“Non Standard Evaluation” section of the vignette</a> for the gory details.</p>
+<p>Vetting expressions are designed to be intuitive to use, but their
+implementation is complex. We recommend you look at
+<code>example(vet)</code> for usage ideas, or at the <a href="#non-standard-evaluation">“Non Standard Evaluation” section of the
+vignette</a> for the gory details.</p>
 </div>
 <div id="non-standard-evaluation" class="section level3">
 <h3>Non Standard Evaluation</h3>
 <div id="vetting-expressions-are-language-objects" class="section level4">
 <h4>Vetting Expressions are Language Objects</h4>
-<p><code>vet</code> captures the first argument unevaluated. For example in:</p>
+<p><code>vet</code> captures the first argument unevaluated. For example
+in:</p>
 <div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="fu">vet</span>(. <span class="sc">&gt;</span> <span class="dv">0</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>)</span></code></pre></div>
-<p><code>. &gt; 0</code> is captured, processed, and evaluated in a special manner. This is a common pattern in R (e.g. as in <code>with</code>, <code>subset</code>, etc.) called Non Standard Evaluation (NSE). One additional wrinkle with <code>vet</code> is that symbols in the captured expression are recursively substituted:</p>
+<p><code>. &gt; 0</code> is captured, processed, and evaluated in a
+special manner. This is a common pattern in R (e.g. as in
+<code>with</code>, <code>subset</code>, etc.) called Non Standard
+Evaluation (NSE). One additional wrinkle with <code>vet</code> is that
+symbols in the captured expression are recursively substituted:</p>
 <div class="sourceCode" id="cb44"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>a <span class="ot">&lt;-</span> <span class="fu">quote</span>(<span class="fu">integer</span>() <span class="sc">&amp;&amp;</span> . <span class="sc">&gt;</span> <span class="dv">0</span>)</span>
 <span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>b <span class="ot">&lt;-</span> <span class="fu">quote</span>(<span class="fu">logical</span>(1L) <span class="sc">&amp;&amp;</span> <span class="sc">!</span><span class="fu">is.na</span>(.))</span>
 <span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a>c <span class="ot">&lt;-</span> <span class="fu">quote</span>(a <span class="sc">||</span> b)</span>
@@ -524,33 +573,67 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <span id="cb44-5"><a href="#cb44-5" aria-hidden="true" tabindex="-1"></a><span class="fu">vet</span>(c, <span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>)</span></code></pre></div>
 <p>The above is thus equivalent to:</p>
 <div class="sourceCode" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="fu">vet</span>((<span class="fu">integer</span>() <span class="sc">&amp;&amp;</span> . <span class="sc">&gt;</span> <span class="dv">0</span>) <span class="sc">||</span> (<span class="fu">logical</span>(1L) <span class="sc">&amp;&amp;</span> <span class="sc">!</span><span class="fu">is.na</span>(.)), <span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>)</span></code></pre></div>
-<p>The recursive substitution removes the typical limitation on “programming” with NSE, although there are a few things to know:</p>
+<p>The recursive substitution removes the typical limitation on
+“programming” with NSE, although there are a few things to know:</p>
 <ul>
-<li>Symbols in vetting expressions that evaluate to language objects (calls or symbols) in the parent frame are substituted with the corresponding language object.</li>
-<li>The result of this substitution is implicitly wrapped in parentheses to avoid operator precedence problems.</li>
-<li>The function part of a call is never substituted (e.g. the <code>fun</code> in <code>fun(a, b)</code>); this extends to operators.</li>
-<li><code>.</code> is never substituted, though you can work around that by escaping it with an additional <code>.</code> (i.e. <code>..</code>).</li>
-<li>You must take particular care when constructing vetting expressions for language objects.</li>
+<li>Symbols in vetting expressions that evaluate to language objects
+(calls or symbols) in the parent frame are substituted with the
+corresponding language object.</li>
+<li>The result of this substitution is implicitly wrapped in parentheses
+to avoid operator precedence problems.</li>
+<li>The function part of a call is never substituted (e.g. the
+<code>fun</code> in <code>fun(a, b)</code>); this extends to
+operators.</li>
+<li><code>.</code> is never substituted, though you can work around that
+by escaping it with an additional <code>.</code>
+(i.e. <code>..</code>).</li>
+<li>You must take particular care when constructing vetting expressions
+for language objects.</li>
 </ul>
-<p>To illustrate the last point, suppose we want to check that an object is a call in the form <code>x + y</code>, then we could use:</p>
+<p>To illustrate the last point, suppose we want to check that an object
+is a call in the form <code>x + y</code>, then we could use:</p>
 <div class="sourceCode" id="cb46"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="fu">vet</span>(<span class="fu">quote</span>(x <span class="sc">+</span> y), my.call)       <span class="co"># notice `quote`</span></span></code></pre></div>
 <p>Or:</p>
 <div class="sourceCode" id="cb47"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>tpl.call <span class="ot">&lt;-</span> <span class="fu">quote</span>(<span class="fu">quote</span>(x <span class="sc">+</span> y))  <span class="co"># notice `quote(quote(...))`</span></span>
 <span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a><span class="fu">vet</span>(tpl.call, my.call)</span></code></pre></div>
-<p>Additionally, you will need to ensure that <code>x</code> and <code>y</code> themselves do not evaluate to language objects in the parent frame.</p>
+<p>Additionally, you will need to ensure that <code>x</code> and
+<code>y</code> themselves do not evaluate to language objects in the
+parent frame.</p>
 </div>
 <div id="parsing-and-evaluation-rules" class="section level4">
 <h4>Parsing and Evaluation Rules</h4>
-<p>Once a vetting expression has been recursively substituted, it is parsed into tokens. Tokens are the parts of the vetting expression bounded by the <code>&amp;&amp;</code> and <code>||</code> operators and optionally enclosed in parentheses. For example, there are three tokens in the following vetting expression:</p>
+<p>Once a vetting expression has been recursively substituted, it is
+parsed into tokens. Tokens are the parts of the vetting expression
+bounded by the <code>&amp;&amp;</code> and <code>||</code> operators and
+optionally enclosed in parentheses. For example, there are three tokens
+in the following vetting expression:</p>
 <div class="sourceCode" id="cb48"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="fu">logical</span>(<span class="dv">1</span>) <span class="sc">||</span> (<span class="fu">numeric</span>(<span class="dv">1</span>) <span class="sc">&amp;&amp;</span> (. <span class="sc">&gt;</span> <span class="dv">0</span> <span class="sc">&amp;</span> . <span class="sc">&lt;</span> <span class="dv">1</span>))</span></code></pre></div>
-<p>They are <code>logical(1)</code>, <code>numeric(1)</code>, and <code>. &gt; 0 &amp; . &lt; 1</code>. The last token is just one token not because of the parentheses around it but because it is a call to <code>&amp;</code> as opposed to <code>&amp;&amp;</code>. Here we use the parentheses to remove parsing ambiguity caused by <code>&amp;</code> and <code>&amp;&amp;</code> having the same operator precedence.</p>
-<p>After the tokens have been identified they are classified as standard tokens or template tokens. Standard tokens are those that contain the <code>.</code> symbol. Every other token is considered a template token.</p>
-<p>Standard tokens are further processed by substituting any <code>.</code> with the value of the object being vetted. These tokens are then evaluated and if <code>all(&lt;result-of-evaluation&gt;)</code> is <code>TRUE</code> then the tokens pass, otherwise they fail. Note <code>all(logical(0L))</code> is TRUE. With:</p>
+<p>They are <code>logical(1)</code>, <code>numeric(1)</code>, and
+<code>. &gt; 0 &amp; . &lt; 1</code>. The last token is just one token
+not because of the parentheses around it but because it is a call to
+<code>&amp;</code> as opposed to <code>&amp;&amp;</code>. Here we use
+the parentheses to remove parsing ambiguity caused by <code>&amp;</code>
+and <code>&amp;&amp;</code> having the same operator precedence.</p>
+<p>After the tokens have been identified they are classified as standard
+tokens or template tokens. Standard tokens are those that contain the
+<code>.</code> symbol. Every other token is considered a template
+token.</p>
+<p>Standard tokens are further processed by substituting any
+<code>.</code> with the value of the object being vetted. These tokens
+are then evaluated and if <code>all(&lt;result-of-evaluation&gt;)</code>
+is <code>TRUE</code> then the tokens pass, otherwise they fail. Note
+<code>all(logical(0L))</code> is TRUE. With:</p>
 <div class="sourceCode" id="cb49"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="fu">vet</span>(. <span class="sc">&gt;</span> <span class="dv">0</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>)</span></code></pre></div>
 <pre><code>[1] TRUE</code></pre>
-<p><code>. &gt; 0</code> becomes <code>1:3 &gt; 0</code>, which evaluates to <code>c(TRUE, TRUE, TRUE)</code> and the token passes.</p>
-<p>Template tokens, i.e. tokens without a <code>.</code> symbol, are evaluated and the resulting R object is sent along with the object to vet to <code>alike</code> for structural comparison. If <code>alike</code> returns <code>TRUE</code> then the token passes, otherwise it fails.</p>
-<p>Finally, the result of evaluating each token is plugged back into the original expression. So<sup>1</sup>:</p>
+<p><code>. &gt; 0</code> becomes <code>1:3 &gt; 0</code>, which
+evaluates to <code>c(TRUE, TRUE, TRUE)</code> and the token passes.</p>
+<p>Template tokens, i.e. tokens without a <code>.</code> symbol, are
+evaluated and the resulting R object is sent along with the object to
+vet to <code>alike</code> for structural comparison. If
+<code>alike</code> returns <code>TRUE</code> then the token passes,
+otherwise it fails.</p>
+<p>Finally, the result of evaluating each token is plugged back into the
+original expression. So<sup>1</sup>:</p>
 <div class="sourceCode" id="cb51"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="fu">vet</span>(<span class="fu">logical</span>(<span class="dv">1</span>) <span class="sc">||</span> (<span class="fu">numeric</span>(<span class="dv">1</span>) <span class="sc">&amp;&amp;</span> (. <span class="sc">&gt;</span> <span class="dv">0</span> <span class="sc">&amp;</span> . <span class="sc">&lt;</span> <span class="dv">1</span>)), <span class="dv">42</span>)</span>
 <span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a><span class="co"># becomes:</span></span>
 <span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a><span class="fu">alike</span>(<span class="fu">logical</span>(1L), <span class="dv">42</span>) <span class="sc">||</span> (<span class="fu">alike</span>(<span class="fu">numeric</span>(1L), <span class="dv">42</span>) <span class="sc">&amp;&amp;</span> <span class="fu">all</span>(<span class="dv">42</span> <span class="sc">&gt;</span> <span class="dv">0</span> <span class="sc">&amp;</span> <span class="dv">42</span> <span class="sc">&lt;</span> <span class="dv">1</span>))</span>
@@ -567,17 +650,38 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 </div>
 <div id="special-cases" class="section level3">
 <h3>Special Cases</h3>
-<p>If you need to reference a literal dot (<code>.</code>) in a token, you can escape it by adding another dot so that <code>.</code> becomes <code>..</code>. If you want to reference <code>...</code> you’ll need to use <code>....</code>. If you have a standard token that does not reference the vetting object (i.e. does not use <code>.</code>) you can mark it as a standard token by wrapping it in <code>.()</code> (if you want to use a literal <code>.()</code> you can use <code>..()</code>).</p>
-<p>If you need <code>&amp;&amp;</code> or <code>||</code> to be interpreted literally you can wrap the call in <code>I</code> to tell <code>vet</code> to treat the entire call as a single token:</p>
+<p>If you need to reference a literal dot (<code>.</code>) in a token,
+you can escape it by adding another dot so that <code>.</code> becomes
+<code>..</code>. If you want to reference <code>...</code> you’ll need
+to use <code>....</code>. If you have a standard token that does not
+reference the vetting object (i.e. does not use <code>.</code>) you can
+mark it as a standard token by wrapping it in <code>.()</code> (if you
+want to use a literal <code>.()</code> you can use
+<code>..()</code>).</p>
+<p>If you need <code>&amp;&amp;</code> or <code>||</code> to be
+interpreted literally you can wrap the call in <code>I</code> to tell
+<code>vet</code> to treat the entire call as a single token:</p>
 <div class="sourceCode" id="cb54"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a><span class="fu">I</span>(<span class="fu">length</span>(a) <span class="sc">==</span> <span class="fu">length</span>(b) <span class="sc">&amp;&amp;</span> . <span class="sc">%in%</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">1</span>)</span></code></pre></div>
-<p><code>vet</code> will stop searching for tokens at the first call to a function other than <code>(</code>, <code>&amp;&amp;</code>, and <code>||</code>. The use of <code>I</code> here is just an example of this behavior and convenient since <code>I</code> does not change the meaning of the vetting token. An implication of this is you should not nest template tokens inside functions as <code>vet</code> will not identify them as template tokens and you may get unexpected results. For example:</p>
+<p><code>vet</code> will stop searching for tokens at the first call to
+a function other than <code>(</code>, <code>&amp;&amp;</code>, and
+<code>||</code>. The use of <code>I</code> here is just an example of
+this behavior and convenient since <code>I</code> does not change the
+meaning of the vetting token. An implication of this is you should not
+nest template tokens inside functions as <code>vet</code> will not
+identify them as template tokens and you may get unexpected results. For
+example:</p>
 <div class="sourceCode" id="cb55"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a><span class="fu">I</span>(<span class="fu">logical</span>(1L) <span class="sc">&amp;&amp;</span> <span class="fu">my_special_fun</span>(.))</span></code></pre></div>
-<p>will always fail because <code>logical(1L)</code> is part of a standard token and is evaluated as <code>FALSE</code> rather than used a template token for a scalar logical.</p>
+<p>will always fail because <code>logical(1L)</code> is part of a
+standard token and is evaluated as <code>FALSE</code> rather than used a
+template token for a scalar logical.</p>
 </div>
 </div>
 <div id="in-functions" class="section level2">
 <h2>In Functions</h2>
-<p>The <code>vetr</code> function streamlines parameter checks in functions. It behaves just like <code>vet</code>, except that you need only specify the vetting expressions. The objects to vet are captured from the function environment:</p>
+<p>The <code>vetr</code> function streamlines parameter checks in
+functions. It behaves just like <code>vet</code>, except that you need
+only specify the vetting expressions. The objects to vet are captured
+from the function environment:</p>
 <div class="sourceCode" id="cb56"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a>fun <span class="ot">&lt;-</span> <span class="cf">function</span>(x, y, z) {</span>
 <span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">vetr</span>(</span>
 <span id="cb56-3"><a href="#cb56-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">matrix</span>(<span class="fu">numeric</span>(), <span class="at">ncol=</span><span class="dv">3</span>),</span>
@@ -592,7 +696,9 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <pre><code>Error in fun(x = matrix(1:12, 4), y = TRUE, z = &quot;baz&quot;): For argument `z`, `&quot;baz&quot; %in% c(&quot;foo&quot;, &quot;bar&quot;)` is not TRUE (FALSE)</code></pre>
 <div class="sourceCode" id="cb60"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fun</span>(<span class="fu">matrix</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">12</span>, <span class="dv">4</span>), <span class="cn">TRUE</span>, <span class="st">&quot;foo&quot;</span>)</span></code></pre></div>
 <pre><code>[1] TRUE</code></pre>
-<p>The arguments to <code>vetr</code> are matched to the arguments of the enclosing function in the same way as with <code>match.call</code>. For example, if we wished to vet just the third argument:</p>
+<p>The arguments to <code>vetr</code> are matched to the arguments of
+the enclosing function in the same way as with <code>match.call</code>.
+For example, if we wished to vet just the third argument:</p>
 <div class="sourceCode" id="cb62"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a>fun <span class="ot">&lt;-</span> <span class="cf">function</span>(x, y, z) {</span>
 <span id="cb62-2"><a href="#cb62-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">vetr</span>(<span class="at">z=</span><span class="fu">character</span>(1L) <span class="sc">&amp;&amp;</span> . <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&quot;foo&quot;</span>, <span class="st">&quot;bar&quot;</span>))</span>
 <span id="cb62-3"><a href="#cb62-3" aria-hidden="true" tabindex="-1"></a>  <span class="cn">TRUE</span>  <span class="co"># do work...</span></span>
@@ -601,13 +707,22 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <pre><code>Error in fun(x = matrix(1:12, 3), y = TRUE, z = &quot;baz&quot;): For argument `z`, `&quot;baz&quot; %in% c(&quot;foo&quot;, &quot;bar&quot;)` is not TRUE (FALSE)</code></pre>
 <div class="sourceCode" id="cb64"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fun</span>(<span class="fu">matrix</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">12</span>, <span class="dv">4</span>), <span class="cn">TRUE</span>, <span class="st">&quot;bar&quot;</span>)</span></code></pre></div>
 <pre><code>[1] TRUE</code></pre>
-<p>Vetting expressions work the same way with <code>vetr</code> as they do with <code>vet</code>.</p>
+<p>Vetting expressions work the same way with <code>vetr</code> as they
+do with <code>vet</code>.</p>
 </div>
 <div id="performance-considerations" class="section level2">
 <h2>Performance Considerations</h2>
 <div id="benchmarks" class="section level3">
 <h3>Benchmarks</h3>
-<p><code>vetr</code> is written primarily in C to minimize the performance impact of adding validation checks to your functions. Performance should be faster than using <code>stopifnot</code> except for the most trivial of checks. The <code>vetr</code> function itself carries some additional overhead from matching arguments, but it should still be faster than <code>stopifnot</code> except in the simplest of cases. Here we run our checks on valid iris objects we used to illustrate <a href="#declarative-checks-with-templates">declarative checks</a>:</p>
+<p><code>vetr</code> is written primarily in C to minimize the
+performance impact of adding validation checks to your functions.
+Performance should be faster than using <code>stopifnot</code> except
+for the most trivial of checks. The <code>vetr</code> function itself
+carries some additional overhead from matching arguments, but it should
+still be faster than <code>stopifnot</code> except in the simplest of
+cases. Here we run our checks on valid iris objects we used to
+illustrate <a href="#declarative-checks-with-templates">declarative
+checks</a>:</p>
 <div class="sourceCode" id="cb66"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a>vetr_iris <span class="ot">&lt;-</span> <span class="cf">function</span>(x) <span class="fu">vetr</span>(tpl.iris)</span>
 <span id="cb66-2"><a href="#cb66-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb66-3"><a href="#cb66-3" aria-hidden="true" tabindex="-1"></a><span class="fu">bench_mark</span>(<span class="at">times=</span><span class="fl">1e4</span>,</span>
@@ -616,50 +731,86 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <span id="cb66-6"><a href="#cb66-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stopifnot_iris</span>(iris)   <span class="co"># defined in &quot;Templates&quot; section</span></span>
 <span id="cb66-7"><a href="#cb66-7" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
 <pre><code>Mean eval time from 10000 iterations, in microseconds:
-  vet(tpl.iris, iris)   ~  22.0
-  vetr_iris(iris)       ~  33.9
-  stopifnot_iris(iris)  ~  50.1</code></pre>
-<p>Performance is optimized for the success case. Failure cases should still perform reasonably well, but will be slower than most success cases.</p>
+  vet(tpl.iris, iris)   ~  14.9
+  vetr_iris(iris)       ~  21.1
+  stopifnot_iris(iris)  ~  36.0</code></pre>
+<p>Performance is optimized for the success case. Failure cases should
+still perform reasonably well, but will be slower than most success
+cases.</p>
 </div>
 <div id="templates-and-performance" class="section level3">
 <h3>Templates and Performance</h3>
-<p>Complex templates will be slower to evaluate than simple ones, particularly for lists with lots of nested elements. Note however that the cost of the vetting expression is a function of the complexity of the template, not that of the value being vetted.</p>
-<p>We recommend that you predefine templates in your package and not in the validation expression since some seemingly innocuous template creation expressions carry substantial overhead:</p>
+<p>Complex templates will be slower to evaluate than simple ones,
+particularly for lists with lots of nested elements. Note however that
+the cost of the vetting expression is a function of the complexity of
+the template, not that of the value being vetted.</p>
+<p>We recommend that you predefine templates in your package and not in
+the validation expression since some seemingly innocuous template
+creation expressions carry substantial overhead:</p>
 <div class="sourceCode" id="cb68"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a><span class="fu">bench_mark</span>(<span class="fu">data.frame</span>(<span class="at">a=</span><span class="fu">numeric</span>()))</span></code></pre></div>
 <pre><code>Mean eval time from 1000 iterations, in microseconds:
-  data.frame(a = numeric())  ~  179</code></pre>
-<p>In this case the <code>data.frame</code> call alone take over 100us. In your package code you could use:</p>
+  data.frame(a = numeric())  ~  111</code></pre>
+<p>In this case the <code>data.frame</code> call alone take over 100us.
+In your package code you could use:</p>
 <div class="sourceCode" id="cb70"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb70-1"><a href="#cb70-1" aria-hidden="true" tabindex="-1"></a>df.tpl <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">a=</span><span class="fu">numeric</span>())</span>
 <span id="cb70-2"><a href="#cb70-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb70-3"><a href="#cb70-3" aria-hidden="true" tabindex="-1"></a>my_fun <span class="ot">&lt;-</span> <span class="cf">function</span>(x) {</span>
 <span id="cb70-4"><a href="#cb70-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">vetr</span>(<span class="at">x=</span>df.tpl)</span>
 <span id="cb70-5"><a href="#cb70-5" aria-hidden="true" tabindex="-1"></a>  <span class="cn">TRUE</span>    <span class="co"># do work</span></span>
 <span id="cb70-6"><a href="#cb70-6" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
-<p>This way the template is created once on package load and re-used each time your function is called.</p>
+<p>This way the template is created once on package load and re-used
+each time your function is called.</p>
 </div>
 </div>
 <div id="alternatives" class="section level2">
 <h2>Alternatives</h2>
-<p>There are many alternatives available to <code>vetr</code>. We do a survey of the following in our <a href="http://htmlpreview.github.io/?https://github.com/brodieG/vetr/blob/master/extra/compare.html">parameter validation functions</a> review:</p>
+<p>There are many alternatives available to <code>vetr</code>. We do a
+survey of the following in our <a href="http://htmlpreview.github.io/?https://github.com/brodieG/vetr/blob/master/extra/compare.html">parameter
+validation functions</a> review:</p>
 <ul>
 <li><code>stopifnot</code> by R Core</li>
-<li><a href="https://github.com/brodieG/vetr"><code>vetr</code></a> by Yours Truly</li>
-<li><a href="https://github.com/hadley/assertthat"><code>asserthat</code></a> by Hadley Wickham</li>
-<li><a href="https://www.r-pkg.org/pkg/assertive"><code>assertive</code></a> by Richie Cotton</li>
-<li><a href="https://github.com/mllg/checkmate"><code>checkmate</code></a> by Michel Lang</li>
+<li><a href="https://github.com/brodieG/vetr"><code>vetr</code></a> by
+Yours Truly</li>
+<li><a href="https://github.com/hadley/assertthat"><code>asserthat</code></a>
+by Hadley Wickham</li>
+<li><a href="https://www.r-pkg.org/pkg/assertive"><code>assertive</code></a> by
+Richie Cotton</li>
+<li><a href="https://github.com/mllg/checkmate"><code>checkmate</code></a> by
+Michel Lang</li>
 </ul>
-<p>The following packages also perform related tasks, although we do not review them:</p>
+<p>The following packages also perform related tasks, although we do not
+review them:</p>
 <ul>
-<li><a href="https://github.com/egnha/valaddin"><code>valaddin</code></a> v0.1.0 by Eugene Ha, a framework for augmenting existing functions with validation contracts. Currently the package is undergoing a major overhaul so we will add it to the comparison once the new release (v0.3.0) is out.</li>
-<li><a href="https://github.com/smbache/ensurer"><code>ensurer</code></a> v1.1 by Stefan M. Bache, a framework for flexibly creating and combining validation contracts. The development version adds an experimental method for creating type safe functions, but it is not published to CRAN so we do not test it here.</li>
-<li><a href="https://github.com/data-cleaning/validate"><code>validate</code></a> by Mark van der Loo and Edwin de Jonge, with a primary focus on validating data in data frames and similar data structures.</li>
-<li><a href="https://github.com/ropensci/assertr"><code>assertr</code></a> by Tony Fischetti, also focused on data validation in data frames and similar structures.</li>
-<li><a href="https://github.com/jimhester/types"><code>types</code></a> by Jim Hester, which implements but does not enforce type hinting.</li>
-<li><a href="https://github.com/gaborcsardi/argufy"><code>argufy</code></a> by Gábor Csárdi, which implements parameter validation via roxygen tags (not released to CRAN).</li>
-<li><a href="https://moodymudskipper.github.io/typed/"><code>typed</code></a> by Antoine Fabri, which enforces types of symbols, function parameters, and return values.</li>
+<li><a href="https://github.com/egnha/valaddin"><code>valaddin</code></a>
+v0.1.0 by Eugene Ha, a framework for augmenting existing functions with
+validation contracts. Currently the package is undergoing a major
+overhaul so we will add it to the comparison once the new release
+(v0.3.0) is out.</li>
+<li><a href="https://github.com/smbache/ensurer"><code>ensurer</code></a> v1.1
+by Stefan M. Bache, a framework for flexibly creating and combining
+validation contracts. The development version adds an experimental
+method for creating type safe functions, but it is not published to CRAN
+so we do not test it here.</li>
+<li><a href="https://github.com/data-cleaning/validate"><code>validate</code></a>
+by Mark van der Loo and Edwin de Jonge, with a primary focus on
+validating data in data frames and similar data structures.</li>
+<li><a href="https://github.com/ropensci/assertr"><code>assertr</code></a> by
+Tony Fischetti, also focused on data validation in data frames and
+similar structures.</li>
+<li><a href="https://github.com/jimhester/types"><code>types</code></a>
+by Jim Hester, which implements but does not enforce type hinting.</li>
+<li><a href="https://github.com/gaborcsardi/argufy"><code>argufy</code></a> by
+Gábor Csárdi, which implements parameter validation via roxygen tags
+(not released to CRAN).</li>
+<li><a href="https://moodymudskipper.github.io/typed/"><code>typed</code></a>
+by Antoine Fabri, which enforces types of symbols, function parameters,
+and return values.</li>
 </ul>
 <hr />
-<p><sup>1</sup>We take some liberties in this example for clarity. For instance, <code>alike</code> returns a character vector on failure, not <code>FALSE</code>, so really what <code>vet</code> is doing is <code>isTRUE(alike(...))</code>.</p>
+<p><sup>1</sup>We take some liberties in this example for clarity. For
+instance, <code>alike</code> returns a character vector on failure, not
+<code>FALSE</code>, so really what <code>vet</code> is doing is
+<code>isTRUE(alike(...))</code>.</p>
 </div>
 
 
