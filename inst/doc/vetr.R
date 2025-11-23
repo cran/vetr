@@ -70,48 +70,48 @@ vet(all_bw(., 0, 1), runif(5) + 1)
 vet(NUM.POS, -runif(5))    # positive numeric; see `?vet_token` for others
 
 ## ----eval=FALSE---------------------------------------------------------------
-#  vet(. > 0, 1:3)
+# vet(. > 0, 1:3)
 
 ## ----eval=FALSE---------------------------------------------------------------
-#  a <- quote(integer() && . > 0)
-#  b <- quote(logical(1L) && !is.na(.))
-#  c <- quote(a || b)
-#  
-#  vet(c, 1:3)
+# a <- quote(integer() && . > 0)
+# b <- quote(logical(1L) && !is.na(.))
+# c <- quote(a || b)
+# 
+# vet(c, 1:3)
 
 ## ----eval=FALSE---------------------------------------------------------------
-#  vet((integer() && . > 0) || (logical(1L) && !is.na(.)), 1:3)
+# vet((integer() && . > 0) || (logical(1L) && !is.na(.)), 1:3)
 
 ## ----eval=FALSE---------------------------------------------------------------
-#  vet(quote(x + y), my.call)       # notice `quote`
+# vet(quote(x + y), my.call)       # notice `quote`
 
 ## ----eval=FALSE---------------------------------------------------------------
-#  tpl.call <- quote(quote(x + y))  # notice `quote(quote(...))`
-#  vet(tpl.call, my.call)
+# tpl.call <- quote(quote(x + y))  # notice `quote(quote(...))`
+# vet(tpl.call, my.call)
 
 ## ----eval=FALSE---------------------------------------------------------------
-#  logical(1) || (numeric(1) && (. > 0 & . < 1))
+# logical(1) || (numeric(1) && (. > 0 & . < 1))
 
 ## -----------------------------------------------------------------------------
 vet(. > 0, 1:3)
 
 ## ----eval=FALSE---------------------------------------------------------------
-#  vet(logical(1) || (numeric(1) && (. > 0 & . < 1)), 42)
-#  # becomes:
-#  alike(logical(1L), 42) || (alike(numeric(1L), 42) && all(42 > 0 & 42 < 1))
-#  # becomes:
-#  FALSE || (TRUE && FALSE)
-#  # becomes:
-#  FALSE
+# vet(logical(1) || (numeric(1) && (. > 0 & . < 1)), 42)
+# # becomes:
+# alike(logical(1L), 42) || (alike(numeric(1L), 42) && all(42 > 0 & 42 < 1))
+# # becomes:
+# FALSE || (TRUE && FALSE)
+# # becomes:
+# FALSE
 
 ## -----------------------------------------------------------------------------
 vet(logical(1) || (numeric(1) && (. > 0 & . < 1)), 42)
 
 ## ----eval=FALSE---------------------------------------------------------------
-#  I(length(a) == length(b) && . %in% 0:1)
+# I(length(a) == length(b) && . %in% 0:1)
 
 ## ----eval=FALSE---------------------------------------------------------------
-#  I(logical(1L) && my_special_fun(.))
+# I(logical(1L) && my_special_fun(.))
 
 ## -----------------------------------------------------------------------------
 fun <- function(x, y, z) {

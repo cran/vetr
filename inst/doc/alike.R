@@ -33,8 +33,8 @@ alike(1L, 1.1)   # 1.1 is not integer-like
 alike(1.1, 1L)   # integers can match numerics
 
 ## ----eval=FALSE---------------------------------------------------------------
-#  stopifnot(length(x) == 1L && (is.integer(x) || is.numeric(x) && floor(x) == x))
-#  stopifnot(alike(integer(1L), x))
+# stopifnot(length(x) == 1L && (is.integer(x) || is.numeric(x) && floor(x) == x))
+# stopifnot(alike(integer(1L), x))
 
 ## -----------------------------------------------------------------------------
 ## two NULLs match two length list
@@ -114,11 +114,11 @@ df.chr.num.num <- structure(
 )
 
 ## ----eval=FALSE---------------------------------------------------------------
-#  iris.tpl <- iris[0, ]
-#  alike(iris.tpl, iris.sample.1)  # make sure they submit data correctly
+# iris.tpl <- iris[0, ]
+# alike(iris.tpl, iris.sample.1)  # make sure they submit data correctly
 
 ## ----eval=FALSE---------------------------------------------------------------
-#  iris.tpl <- abstract(iris)
+# iris.tpl <- abstract(iris)
 
 ## -----------------------------------------------------------------------------
 abstract(list(c(a=1, b=2, c=3), letters))
