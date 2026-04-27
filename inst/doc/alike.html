@@ -912,9 +912,9 @@ overhead:</p>
 <span id="cb101-7"><a href="#cb101-7" tabindex="-1"></a>  <span class="fu">type_and_len</span>(rivers, rivers)</span>
 <span id="cb101-8"><a href="#cb101-8" tabindex="-1"></a>)</span></code></pre></div>
 <pre><code>Mean eval time from 10000 iterations, in microseconds:
-  identical(rivers, rivers)     ~  0.2
-  alike(rivers, rivers)         ~  1.0
-  type_and_len(rivers, rivers)  ~  0.6</code></pre>
+  identical(rivers, rivers)     ~  0.15
+  alike(rivers, rivers)         ~  0.95
+  type_and_len(rivers, rivers)  ~  0.55</code></pre>
 <p>While <code>alike</code> is slower than <code>identical</code> and
 the comparable bare bones R function, it is competitive with a bare
 bones R function that checks types and length. As objects grow more
@@ -927,7 +927,7 @@ applications:</p>
 <span id="cb103-4"><a href="#cb103-4" tabindex="-1"></a>)</span></code></pre></div>
 <pre><code>Mean eval time from 10000 iterations, in microseconds:
   identical(mtcars, mtcars)  ~  0.3
-  alike(mtcars, mtcars)      ~  4.7</code></pre>
+  alike(mtcars, mtcars)      ~  4.6</code></pre>
 <p>In the above example, we are comparing the data frames, their
 attributes, and the 11 columns individually.</p>
 <p>Keep in mind that the complexity of the <code>alike</code> comparison
@@ -957,9 +957,9 @@ itself to ensure that the comparisons succeed for <code>alike</code>,
 <span id="cb105-6"><a href="#cb105-6" tabindex="-1"></a>  <span class="fu">identical</span>(mdl.tpl, mdl.tpl)</span>
 <span id="cb105-7"><a href="#cb105-7" tabindex="-1"></a>)</span></code></pre></div>
 <pre><code>Mean eval time from 1000 iterations, in microseconds:
-  alike(mdl.tpl, mdl.tpl)      ~   60
-  all.equal(mdl.tpl, mdl.tpl)  ~  515
-  identical(mdl.tpl, mdl.tpl)  ~    1</code></pre>
+  alike(mdl.tpl, mdl.tpl)      ~   58.5
+  all.equal(mdl.tpl, mdl.tpl)  ~  537.5
+  identical(mdl.tpl, mdl.tpl)  ~    0.5</code></pre>
 <p>Even with template as large as <code>lm</code> results (check
 <code>str(mdl.tpl)</code>) we can evaluate <code>alike</code> thousands
 of times before the overhead becomes noticeable.</p>
@@ -976,8 +976,8 @@ Consider:</p>
 <span id="cb107-6"><a href="#cb107-6" tabindex="-1"></a>  <span class="fu">alike</span>(<span class="fu">data.frame</span>(<span class="fu">integer</span>(), <span class="fu">numeric</span>()), df.cur)</span>
 <span id="cb107-7"><a href="#cb107-7" tabindex="-1"></a>)</span></code></pre></div>
 <pre><code>Mean eval time from 1000 iterations, in microseconds:
-  alike(df.tpl, df.cur)                     ~   3
-  alike(data.frame(integer(), numeric())..  ~  88</code></pre>
+  alike(df.tpl, df.cur)                     ~    4.5
+  alike(data.frame(integer(), numeric())..  ~  101.5</code></pre>
 <p><code>data.frame</code> is a particularly slow constructor, but in
 general you are best served by defining your templates (including calls
 to <code>abstract</code>) outside of your function so they are created

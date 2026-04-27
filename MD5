@@ -1,6 +1,6 @@
-c5e872f6ab9cc9e653ee8ae3d9a48712 *DESCRIPTION
+e2e6d88ee6ad4cc37364999a52452d66 *DESCRIPTION
 84ab63cb7ba1fff2b4f02f70603a87bf *NAMESPACE
-7cdfa2163d33e7a2b3b0116dfe32cbf6 *NEWS.md
+31120b8d7d6b093b58aa3aab38081bfb *NEWS.md
 b63276222e4aa7ceb1752792e60e1edf *R/abstract.R
 e470cce03c3ee744360d4826afdb0363 *R/alike.R
 69fdb68390f9ead5ff2b26f0b63a279d *R/all-bw.R
@@ -19,10 +19,10 @@ acb4b92a6e988b74d5f6a2b282d63f1e *R/validators.R
 0234a5b40d8d822fc0673f1071b04ac8 *build/vignette.rds
 1ebf780ba9b51941e98ddec51e5a0688 *inst/doc/alike.R
 d2ee572de8913197e767f92c94770185 *inst/doc/alike.Rmd
-f688908c7ef9b650f4d662653a30ea13 *inst/doc/alike.html
+95e0446c7b8d762c263c6ebc36010b05 *inst/doc/alike.html
 cca6c13e8791bed81dd4bacd726c05c2 *inst/doc/vetr.R
 ca4e5201e2c972037997ef62d25688a1 *inst/doc/vetr.Rmd
-605f166f5f623bfdf58e7121ce745776 *inst/doc/vetr.html
+f4fb2a61da2b9a68c903f128b560dc79 *inst/doc/vetr.html
 c0e221173b9f169bc8856564ebee28bf *man/abstract.Rd
 af8d6d185961528c35ae34919efecf6e *man/abstract.ggplot.Rd
 6a477d474a057e60abcf8c19807349fd *man/alike.Rd
@@ -109,8 +109,8 @@ e00c4b63c3affb292b606e359fa735cf *tests/unitizer/tev.unitizer/data.rds
 a6be53b0893879f55b06f1fc7aa8ea94 *tests/unitizer/type.R
 e3648d10dc1207bc2f17922a156f4f28 *tests/unitizer/type.unitizer/data.rds
 b54fbbd1db41a8e6f2cc3514416f323b *tests/unitizer/validate.R
-9b443c55277b89aaa86e5e793b12335b *tests/unitizer/validate.args.R
-2403f6be80f66f80d8fb913ec0e00f42 *tests/unitizer/validate.args.unitizer/data.rds
+0c0e1e7c9e8d8d36591b8c56939e492f *tests/unitizer/validate.args.R
+85a2bf5a233f721ff795fbba143c29cf *tests/unitizer/validate.args.unitizer/data.rds
 053da628896bd928fdac3739a738a05f *tests/unitizer/validate.unitizer/data.rds
 ca24c43299306bd818b72b138229030c *tests/valgrind/run.R
 d2ee572de8913197e767f92c94770185 *vignettes/alike.Rmd
